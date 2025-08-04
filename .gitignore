@@ -1,0 +1,12 @@
+venv
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+*.exe
+Driver_Notes
+
+.vscode/
+*.zip
+downloaded_images/
