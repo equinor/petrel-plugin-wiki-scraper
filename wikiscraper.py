@@ -9,12 +9,17 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 
 
-def download_wiki_page(title, output_file):
+def download_wiki_page(title):
+
+    # Create directory for dowloaded files
+    download_dir = f"{title}_htlm_files"
+    os.makedirs(download_dir, exist_ok=True)
+
     # You need to log into the Wiki with Edge browser first
  
     # Setup Edge options
     edge_options = Options()
-    edge_options.add_argument("--start-maximized")
+    edge_options.add_argument("--window-size=500,500")
 
     # Path to your Edge WebDriver
     service = Service("./msedgedriver.exe")  # Adjust path if needed
@@ -25,17 +30,30 @@ def download_wiki_page(title, output_file):
     # Log in
     # page_url = f"https://wiki.equinor.com/"
  
+    # Download the page as MediaWiki
+    mediawiki_url = f"https://wiki.equinor.com/wiki/index.php?title=Software:Petrel_Plugins:{title}&action=raw"
+    driver.get(mediawiki_url)
+
+    #Save MediaWiki page source
+    mediawiki_output_file = os.path.join(download_dir, f"{title}.mwk")
+    raw_content = driver.find_element("tag name", "pre").text
+    with open(mediawiki_output_file, "w", encoding="utf-8") as f:
+        f.write(raw_content)
+
+    print(f"Page saved to {mediawiki_output_file}")
 
     # Construct the wiki page URL
-    page_url = f"https://wiki.equinor.com/wiki/Software:Petrel_Plugins:{title.replace(' ', '%20')}"
+    page_url = f"https://wiki.equinor.com/wiki/Software:Petrel_Plugins:{title}"
     driver.get(page_url)
+    #Save MediaWiki page source
 
     # Save page source
+    html_output_file = os.path.join(download_dir, f"{title}.html")
     html = driver.page_source
-    with open(output_file, "w", encoding="utf-8") as f:
+    with open(html_output_file, "w", encoding="utf-8") as f:
         f.write(html)
 
-    print(f"Page saved to {output_file}")
+    print(f"Page saved to {html_output_file}")
 
 
     # Parse HTML and extract image URLs
@@ -47,10 +65,6 @@ def download_wiki_page(title, output_file):
         if img.get('src') and img['src'].lower().endswith(('.png', '.jpg', '.gif'))
     ]
 
-    # Create directory for images
-    image_dir = "downloaded_images"
-    os.makedirs(image_dir, exist_ok=True)
-
  
     # Download images using WebDriver
     for img_url in img_urls:
@@ -61,7 +75,7 @@ def download_wiki_page(title, output_file):
             # Get image content from browser
             img_data = driver.find_element("tag name", "img").screenshot_as_png
             img_name = os.path.basename(urlparse(img_url).path)
-            img_path = os.path.join(image_dir, img_name)
+            img_path = os.path.join(download_dir, img_name)
 
             with open(img_path, "wb") as img_file:
                 img_file.write(img_data)
@@ -72,5 +86,12 @@ def download_wiki_page(title, output_file):
 
     driver.quit()
 
+    # Use installed PanDoc to convert the MediaWiki file to html
+    pandoc_command = f"pandoc -f mediawiki -t html -o {os.path.join(download_dir, f'{title}_converted.html')} {mediawiki_output_file}"
+    os.system(pandoc_command)   
+
 # Example usage
-download_wiki_page("Anonymizer", "Anonymizer.html")
+wiki_titles = ["Anonymizer"]
+for title in wiki_titles:
+    download_wiki_page(title)
+
