@@ -260,36 +260,7 @@ wiki_titles_full =  ["3D_Figure",
                 "WellDB",
                 "Window_Utility"]
 
-wiki_titles_remaining =  ["Score",
-                "Seal_Capacity",
-                "Seismic_Well_Tie",
-                "Seismic_to_Pointset",
-                "Setup_TEST_or_UAT_mode_of_the_Statoil_Internal_Toolbox",
-                "SiteSurvey",
-                "Site_Survey",
-                "Sparse_Layer_Transform",
-                "SpatialStacker",
-                "Spatial_Stacker",
-                "Statoil_Internal_Toolbox",
-                "Statoil_Internal_Toolbox_Development",
-                "Statoil_Tips",
-                "Statoil_Top_Menu",
-                "Stratigraphic_Cleanup",
-                "Structural_Smoothing",
-                "SubsHeat",
-                "TFS2Git",
-                "Temperature_Horizons",
-                "Thickness_Inversion",
-                "Time_Dependent_Temperature",
-                "VRosion",
-                "Volume_Calculation",
-                "Web_Links",
-                "WellDB",
-                "Window_Utility"]
-
-wiki_titles=  ["Seismic_Well_Tie"]
-
-
+wiki_titles =  [] #Copy the list of titles you need from wiki_titles_full
 
 for title in wiki_titles:
     download_wiki_page(title)
